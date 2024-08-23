@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  wiki-kafka-producer:
+    build: ./WikiKafkaProducer
+    ports:
+      - "8080:8080"
+    networks:
+      - wiki-kafka
+
+  wiki-kafka-consumer:
+    build:
+      context: ./WikiKafkaConsumer
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres
+    networks:
+      - wiki-kafka
+
+  postgres:
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=wikikafkadb
+      - POSTGRES_USER=wikikafka
+      - POSTGRES_PASSWORD=wikikafka_db_access_0ADLJDgdada
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - wiki-kafka
+
+  kafka:
+    image: bitnami/kafka:latest
+    ports:
+      - "9092:9092"
+    volumes:
+      - "kafka_data:/bitnami"
+    environment:
+      # KRaft settings
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      # Listeners
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+    networks:
+      - wiki-kafka
+
+networks:
+  wiki-kafka:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  kafka_data:
+
