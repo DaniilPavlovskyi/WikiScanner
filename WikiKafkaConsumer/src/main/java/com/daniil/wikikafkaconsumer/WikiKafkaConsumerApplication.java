@@ -10,4 +10,5 @@ public class WikiKafkaConsumerApplication {
         SpringApplication.run(WikiKafkaConsumerApplication.class, args);
     }
 
+
 }

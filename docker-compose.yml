@@ -11,6 +11,12 @@ services:
   wiki-kafka-consumer:
     build:
       context: ./WikiKafkaConsumer
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/wikikafkadb
+      - SPRING_DATASOURCE_USERNAME=wikikafka
+      - SPRING_DATASOURCE_PASSWORD=wk_db_0asdo1Ajsadg
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_HIBERNATE_DIALECT=org.hibernate.dialect.PostgreSQLDialect
     ports:
       - "8081:8081"
     depends_on:
@@ -23,7 +29,7 @@ services:
     environment:
       - POSTGRES_DB=wikikafkadb
       - POSTGRES_USER=wikikafka
-      - POSTGRES_PASSWORD=wikikafka_db_access_0ADLJDgdada
+      - POSTGRES_PASSWORD=wk_db_0asdo1Ajsadg
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
